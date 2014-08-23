@@ -1,19 +1,24 @@
 function PortalWorld()
 {
-	var fps
+	var hp, fps
 	
 	var floor
-	var walls, tilemap, viewport
+	var walls, viewport
 	
-	var scientist, portal
+	var portal
+	
+	var monsters
 	
 	this.setup = function()
 	{
-	    fps = document.getElementById("fps")
+	    hp = document.getElementById('hp')
+	    fps = document.getElementById('fps')
+	    
+	    depth += 1
 	    
 	    var sprite_sheet = new jaws.SpriteSheet({image: "graphics/portal_world.png", orientation:'right', frame_size: [16,16]})
 	    
-	    walls = new jaws.SpriteList()
+	    walls = []
 	    
 	    /* Initialise the map */
 	    var map = []
@@ -25,7 +30,6 @@ function PortalWorld()
     	        if (i > 300)
     	        {
     	            map.push(1)
-    	            //walls.push( new Sprite({image: sprite_sheet.frames[1], x: x*16*game_scale, y: y*16*game_scale}) )
                 }
                 else
                 {
@@ -74,7 +78,7 @@ function PortalWorld()
             return new_map
 	    }
 	    
-	    for (var i=0 ; i<5 ; i++)
+	    for (var i=0 ; i<4 ; i++)
 	    {
             map = apply_cellular_automaton(map, world_height, world_width, [6, 7, 8], [3, 4, 5, 6, 7, 8])
         }
@@ -90,7 +94,16 @@ function PortalWorld()
     	    {
     	        if (map[y*world_width+x])
     	        {
-    	            walls.push( new Sprite({image: sprite_sheet.frames[1], x: x*16*game_scale, y: y*16*game_scale}) )
+    	            if (x == 0 || y == 0 || y == world_height-1 || x == world_width-1)
+    	            {
+        	            var s = new Sprite({image: sprite_sheet.frames[2], x: x*16*game_scale, y: y*16*game_scale})
+    	            }
+    	            else
+    	            {
+    	                var s = new Sprite({image: sprite_sheet.frames[1], x: x*16*game_scale, y: y*16*game_scale})
+                        s.hp = 25
+                    }
+    	            walls.push( s )
     	        }
     	    }   
         }   
@@ -118,8 +131,6 @@ function PortalWorld()
         
         var x = 64, y = 64
         
-	    
-	    scientist = new Player({x:64-8, y:64-8, anchor: "center", scale_image: game_scale})
 	    while (jaws.collide(scientist, walls))
 	    {
     	    scientist.x += 16
@@ -134,6 +145,8 @@ function PortalWorld()
         	    scientist.y = Math.floor(Math.random() * world_height * 16 * game_scale)
     	    }
 	    }
+	    
+	    scientist.hp -= 25
 	    
 	    
 	    portal = new Sprite({x:Math.floor(Math.random() * world_width * 16 * game_scale)-8, y:Math.floor(Math.random() * world_height * 16 * game_scale)-8, anchor: "center", scale_image: game_scale})
@@ -155,7 +168,30 @@ function PortalWorld()
                                           orientation: "right", 
                                           frame_duration: 120,
                                           scale_image:game_scale})
-                            
+                                          
+                                          
+                                          
+        var monster_count = Math.floor(Math.random() * depth * 100)
+        console.log('generating', monster_count, 'monsters')
+        monsters = []
+        for (var i=0 ; i<monster_count ; i++)
+        {
+            var m = new Monster({x:Math.floor(Math.random() * world_width * 16 * game_scale)-8, y:Math.floor(Math.random() * world_height * 16 * game_scale)-8, anchor: "center", scale_image: game_scale})
+    	    while (jaws.collide(m, walls) || tilemap.lineOfSight([scientist.x, scientist.y], [m.x, m.y]))
+    	    {
+        	    m.x += 16
+        	    m.y += 16
+        	    if (m.x > world_width * 16 * game_scale)
+        	    {
+            	    m.x = Math.floor(Math.random() * world_width * 16 * game_scale)
+        	    }
+        	    if (m.y > world_height * 16 * game_scale)
+        	    {
+            	    m.y = Math.floor(Math.random() * world_height * 16 * game_scale)
+        	    }
+    	    }
+            monsters.push(m)
+        }
 	}
 	
 	this.update = function()
@@ -180,15 +216,67 @@ function PortalWorld()
     	    scientist.walk('right')
 	    }
 	    
+	    var monsters_hit = jaws.collideOneWithMany(scientist, monsters)
+	    for (var i=0 ; i<monsters_hit.length ; i++)
+	    {
+	        if (monsters_hit[i].alive)
+        	    scientist.hp -= monsters_hit[i].damage
+	    }
+	    
+	    if (jaws.pressed("space"))
+	    {
+	        if (monsters_hit.length > 0)
+	        {
+	            var i=0
+	            while (i<monsters_hit.length && !monsters_hit[i].alive)
+	                i++
+	            if (i < monsters_hit.length)
+	            {
+	                monsters_hit[i].hp -= scientist.damage
+                    if (monsters_hit[i].hp <= 0)
+                    {
+    	                var j = monsters.indexOf(monsters_hit[i])
+                        monsters[j].alive = false
+                    }
+    	        }
+    	            
+	        }
+	        else
+	        {
+    	        var coords = scientist.get_facing_coords()
+        	    
+                var blocks_hit = tilemap.at(coords.x, coords.y)
+                if (blocks_hit.length > 0)
+                {
+                    if (typeof blocks_hit[0].hp !== 'undefined')
+                    {
+                        blocks_hit[0].hp -= scientist.damage
+                        //if (!scientist.armed) {scientist.hp -= 1}
+                        if (blocks_hit[0].hp <= 0)
+                        {
+                            var i = walls.indexOf(blocks_hit[0])
+                            delete walls[i]
+                            
+                            tilemap.clear()
+                            tilemap.push(walls)
+                        }
+                    }
+                }
+            }
+	    }
+	    
         var r = {}
-        r.rect = function() { return new jaws.Rect(scientist.x-4, scientist.y-4, 8, 8) }
-
+        r.rect = function() { return new jaws.Rect(scientist.x-(4*game_scale), scientist.y-(4*game_scale), 8*game_scale, 8*game_scale) }
 	    if (jaws.collide(r, walls))
 	    {
 	        scientist.undo_walk()
 	    }
 	    
+	    scientist.update()
+	    jaws.update(monsters)
+	    
 	    viewport.centerAround(scientist)
+
 	    
 	    portal.setImage(portal.anim.next())
 	    
@@ -197,6 +285,9 @@ function PortalWorld()
     	    jaws.switchGameState(PortalWorld)
 	    }
 	
+        if (scientist.hp < 300) {hp.style.color = 'red'}
+        else {hp.style.color = 'white'}
+        hp.innerHTML = scientist.hp + ' / ' + scientist.hp_max
     	fps.innerHTML = jaws.game_loop.fps
 	}
 	
@@ -209,8 +300,8 @@ function PortalWorld()
         {
             scientist.draw()
             portal.draw()
+            jaws.draw(monsters)
         })
-    	//portal.draw()
 	}
 }
 

@@ -1,94 +1,91 @@
-function Player(options)
+function Monster(options)
 {
     this.constructor(options)
     
-    var anim = new jaws.Animation({sprite_sheet: "graphics/scientist.png", 
+    var anim = new jaws.Animation({sprite_sheet: "graphics/monsters.png", 
                                    frame_size: [16,16], 
                                    orientation: "right", 
-                                   frame_duration: 90,
+                                   frame_duration: 60,
                                    scale_image:game_scale})
     this.animations = {}
     
-    this.animations.idle = anim.slice(0,1)
-    this.animations.down = anim.slice(0,4)
+    /*this.animations.idle = anim.slice(0,1)
+    this.animations.moving = anim.slice(0,4)
     this.animations.right = anim.slice(5,8)
     this.animations.left = anim.slice(8,12)
-    this.animations.up = anim.slice(12,16)
+    this.animations.up = anim.slice(12,16)*/
     
-    this.animations.current = this.animations.idle
+    this.animations.current = anim.slice(0,4)
     
     this.setImage(this.animations.current.next())
     
-    this.vx = 2
-    this.vy = 2
+    this.vx = 1
+    this.vy = 1
+    
+    this.dx = 0
+    this.dy = 0
     
     this.x_prev = this.x
     this.y_prev = this.y
     
-    this.hp_max = 300
+    this.hp_max = 5
     this.hp = this.hp_max
-    this.hp_counter_max = 300
+    this.hp_counter_max = 200
     this.hp_counter = this.hp_counter_max
     this.damage = 1
     this.armed = false
     
+    this.alive = true
+    
 }
 
-Player.prototype = new Mob({})
+Monster.prototype = new Mob({})
 
-Player.prototype.walk = function(direction)
+Monster.prototype.move = function()
 {
-    if (direction == 'left')
+    this.x += this.dx * this.vx
+    this.y += this.dy * this.vy
+    
+    if (tilemap.at(this.x, this.y).length > 0)
     {
-        if (this.animations.current != this.animations.left)
-        {
-            this.animations.current = this.animations.left
-        }
+        this.x -= this.dx * this.vx
+        this.y -= this.dy * this.vy
+    }
+    
+    /*if (direction == 'left')
+    {
         this.x_prev = this.x
         this.x -= this.vx
     }
     
     else if (direction == 'right')
     {
-        if (this.animations.current != this.animations.right)
-        {
-            this.animations.current = this.animations.right
-        }
         this.x_prev = this.x
         this.x += this.vx
     }
     
     else if (direction == 'up')
     {
-        if (this.animations.current != this.animations.up)
-        {
-            this.animations.current = this.animations.up
-        }
         this.y_prev = this.y
         this.y -= this.vy
     }
     
     else if (direction == 'down')
     {
-        if (this.animations.current != this.animations.down)
-        {
-            this.animations.current = this.animations.down
-        }
         this.y_prev = this.y
         this.y += this.vy
-    }
-    
-    this.setImage(this.animations.current.next())
+    }*/
 }
 
-Player.prototype.undo_walk = function()
+Monster.prototype.undo_walk = function()
 {
     this.x = this.x_prev
     this.y = this.y_prev
 }
 
-Player.prototype.update = function()
+Monster.prototype.update = function()
 {
+    if (!this.alive) return;
     this.hp_counter -= 1
     if (this.hp_counter < 0)
     {
@@ -99,9 +96,41 @@ Player.prototype.update = function()
     {
         this.hp = this.hp_max
     }
+    
+    this.setImage(this.animations.current.next())
+    
+    if (tilemap.lineOfSight([this.x, this.y], [scientist.x, scientist.y]))
+    {
+        var dx = scientist.x - this.x
+        var dy = scientist.y - this.y
+        if (dx < 0)
+        {
+            this.dx = -1
+        }
+        else
+        {
+            this.dx = 1
+        }
+        
+        if (dy < 0)
+        {
+            this.dy = -1
+        }
+        else
+        {
+            this.dy = 1
+        }
+    }
+    else
+    {
+        this.dx = 0
+        this.dy = 0
+    }
+    
+    this.move()
 }
 
-Player.prototype.get_facing_coords = function()
+Monster.prototype.get_facing_coords = function()
 {
     if (this.animations.current == this.animations.down)
     {

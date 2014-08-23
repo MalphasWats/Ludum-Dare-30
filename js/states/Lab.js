@@ -1,14 +1,15 @@
 function Lab()
 {
-	var fps
+	var hp, fps
 	
 	var map
 	
-	var scientist, portal
+	var portal
 	
 	this.setup = function()
 	{
-	    fps = document.getElementById("fps")
+	    hp = document.getElementById('hp')
+	    fps = document.getElementById('fps')
 	    
 	    var sprite_sheet = new jaws.SpriteSheet({image: "graphics/laboratory.png", frame_size: [16,16]})
 	    
@@ -69,6 +70,9 @@ function Lab()
     	    jaws.switchGameState(PortalWorld)
 	    }
 	
+        if (scientist.hp < 300) {hp.style.color = 'red'}
+        else {hp.style.color = 'white'}
+        hp.innerHTML = scientist.hp + ' / ' + scientist.hp_max
     	fps.innerHTML = jaws.game_loop.fps
 	}
 	

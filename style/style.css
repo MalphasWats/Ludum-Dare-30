@@ -18,10 +18,16 @@ h1
 	margin:4px 0px 12px 0px;	
 }
 
+h2
+{
+    margin:6px 0px;
+}
+
 canvas#game 
 {
      background:white;
      border:3px solid white;
+     border-bottom:none;
      display:block;
      
      margin:0px auto;
@@ -29,4 +35,13 @@ canvas#game
 
 p {padding:6px;}
 
-#fps_box {text-align: right;}
+#hud 
+{
+    border:3px solid white;
+    padding:6px;
+    position:relative;
+    top:-3px;
+    z-index: -1;
+}
+
+#fps_box {float: right;}
