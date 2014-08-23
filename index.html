@@ -3,8 +3,11 @@
   <head>
     <script>
         var game_scale = 1
+        var world_width = 64
+        var world_height = 64
     </script>
     <script src="js/jaws/jaws.js"></script>
+    <script src="js/jaws/src/extras/sprite_list.js"></script>
     <script src="js/classes/Mob.js"></script>
     <script src="js/classes/Player.js"></script>
     <script src="js/states/Lab.js"></script>
@@ -28,7 +31,7 @@
 	{
 		jaws.unpack()
 		jaws.assets.bust_cache=true // temporary
-		jaws.assets.add(["graphics/scientist.png"])
+		jaws.assets.add(["graphics/scientist.png", "graphics/portal.png", "graphics/laboratory.png", "graphics/portal_world.png"])
 		jaws.start(Lab)
     }
 	</script>

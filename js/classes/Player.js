@@ -22,19 +22,25 @@ function Player(options)
     this.vx = 3
     this.vy = 3
     
+    this.x_prev = this.x
+    this.y_prev = this.y
+    
 }
 
 Player.prototype = new Mob({})
 
 Player.prototype.walk = function(direction)
 {
+    
+    
+    
     if (direction == 'left')
     {
         if (this.animations.current != this.animations.left)
         {
             this.animations.current = this.animations.left
         }
-        
+        this.x_prev = this.x
         this.x -= this.vx
     }
     
@@ -44,7 +50,7 @@ Player.prototype.walk = function(direction)
         {
             this.animations.current = this.animations.right
         }
-        
+        this.x_prev = this.x
         this.x += this.vx
     }
     
@@ -54,7 +60,7 @@ Player.prototype.walk = function(direction)
         {
             this.animations.current = this.animations.up
         }
-        
+        this.y_prev = this.y
         this.y -= this.vy
     }
     
@@ -64,11 +70,15 @@ Player.prototype.walk = function(direction)
         {
             this.animations.current = this.animations.down
         }
-        
+        this.y_prev = this.y
         this.y += this.vy
     }
     
     this.setImage(this.animations.current.next())
-    
-    jaws.forceInsideCanvas(this)
+}
+
+Player.prototype.undo_walk = function()
+{
+    this.x = this.x_prev
+    this.y = this.y_prev
 }
