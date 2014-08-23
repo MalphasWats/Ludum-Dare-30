@@ -1,0 +1,37 @@
+<!DOCTYPE html> 
+<html>
+  <head>
+    <script>
+        var game_scale = 1
+    </script>
+    <script src="js/jaws/jaws.js"></script>
+    <script src="js/classes/Mob.js"></script>
+    <script src="js/classes/Player.js"></script>
+    <script src="js/states/Lab.js"></script>
+    <script src="js/states/PortalWorld.js"></script>
+    
+    <link type="text/css" rel="stylesheet" href="style/style.css">
+    <title>LD30</title>
+  </head>
+<body>
+
+	<h1>??? - LD30 - Connected Worlds</h1>
+
+	<canvas width="256" height="256" id="game"></canvas>
+	<p id="fps_box"><span id="fps"></span> fps.</p>
+	
+	<h2>Instructions</h2>
+	<p>WASD to move.</p>
+  
+ 	<script>
+    jaws.onload = function()
+	{
+		jaws.unpack()
+		jaws.assets.bust_cache=true // temporary
+		jaws.assets.add(["graphics/scientist.png"])
+		jaws.start(Lab)
+    }
+	</script>
+
+</body>
+</html>
