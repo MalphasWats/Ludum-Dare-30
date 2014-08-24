@@ -104,11 +104,11 @@ function PortalWorld()
     	        {
     	            if (x == 0 || y == 0 || y == world_height-1 || x == world_width-1)
     	            {
-        	            var s = new Sprite({image: sprite_sheet.frames[2], x: x*16*game_scale, y: y*16*game_scale})
+        	            var s = new Sprite({image: sprite_sheet.frames[2], x: x*16*game_scale, y: y*16*game_scale, scale_image:game_scale})
     	            }
     	            else
     	            {
-    	                var s = new Sprite({image: sprite_sheet.frames[1], x: x*16*game_scale, y: y*16*game_scale})
+    	                var s = new Sprite({image: sprite_sheet.frames[1], x: x*16*game_scale, y: y*16*game_scale, scale_image:game_scale})
                         s.hp = 25
                     }
     	            walls.push( s )
@@ -116,7 +116,7 @@ function PortalWorld()
     	    }   
         }   
 	    
-	    tilemap = new jaws.TileMap({size: [world_width, world_height], cell_size: [16,16]})
+	    tilemap = new jaws.TileMap({size: [world_width, world_height], cell_size: [16*game_scale,16*game_scale]})
 	    tilemap.push(walls)
 	    
 	    viewport = new jaws.Viewport({max_x: world_width*16*game_scale, max_y: world_height*16*game_scale})
