@@ -11,7 +11,7 @@ function Player(options)
     
     this.animations.idle = anim.slice(0,1)
     this.animations.down = anim.slice(0,4)
-    this.animations.right = anim.slice(5,8)
+    this.animations.right = anim.slice(4,8)
     this.animations.left = anim.slice(8,12)
     this.animations.up = anim.slice(12,16)
     
