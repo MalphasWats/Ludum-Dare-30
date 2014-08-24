@@ -300,22 +300,22 @@ function PortalWorld()
 	
 	this.update = function()
 	{
-	    if (jaws.pressed("a"))
+	    if (jaws.pressed("a") || quint.touched("left"))
 	    {
     	    scientist.walk('left')
 	    }
 	    
-	    if (jaws.pressed("w"))
+	    if (jaws.pressed("w") || quint.touched("up"))
 	    {
     	    scientist.walk('up')
 	    }
 	    
-	    if (jaws.pressed("s"))
+	    if (jaws.pressed("s")|| quint.touched("down"))
 	    {
     	    scientist.walk('down')
 	    }
 	    
-	    if (jaws.pressed("d"))
+	    if (jaws.pressed("d") || quint.touched("right"))
 	    {
     	    scientist.walk('right')
 	    }
@@ -336,7 +336,7 @@ function PortalWorld()
             }
 	    }
 	    
-	    if (jaws.pressed("space"))
+	    if (jaws.pressed("space") || quint.touched("a") || quint.touched("b"))
 	    {
 	        if (live_monster) // && monsters_hit.length > 0)
 	        {

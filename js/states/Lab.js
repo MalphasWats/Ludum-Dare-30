@@ -52,22 +52,22 @@ function Lab()
 	
 	this.update = function()
 	{
-	    if (jaws.pressed("a"))
+	    if (jaws.pressed("a") || quint.touched("left"))
 	    {
     	    scientist.walk('left')
 	    }
 	    
-	    else if (jaws.pressed("w"))
+	    if (jaws.pressed("w") || quint.touched("up"))
 	    {
     	    scientist.walk('up')
 	    }
 	    
-	    else if (jaws.pressed("s"))
+	    if (jaws.pressed("s")|| quint.touched("down"))
 	    {
     	    scientist.walk('down')
 	    }
 	    
-	    else if (jaws.pressed("d"))
+	    if (jaws.pressed("d") || quint.touched("right"))
 	    {
     	    scientist.walk('right')
 	    }
