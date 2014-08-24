@@ -39,6 +39,25 @@ function Player(options)
     this.transformer = false
     this.resonator = false
     this.wall_broken = false
+    
+    this.sounds = {}
+    
+    this.sounds['hit_wall'] = new Howl({
+            urls: ['sounds/hit_wall.wav']
+        })
+    this.sounds['hit_wall'].timer = 0
+    this.sounds['attacked'] = new Howl({
+            urls: ['sounds/attacked.wav']
+        })
+    this.sounds['attacked'].timer = 0
+    this.sounds['hit_monster'] = new Howl({
+            urls: ['sounds/hit_monster.wav']
+        })
+    this.sounds['hit_monster'].timer = 0
+    this.sounds['powerup'] = new Howl({
+            urls: ['sounds/powerup.wav']
+        })
+    this.sounds['powerup'].timer = 0
 }
 
 Player.prototype = new Mob({})
@@ -119,6 +138,11 @@ Player.prototype.update = function()
         this.text.x = this.x+(8*game_scale)
         this.text.y = this.y-(8*game_scale)
     }
+    
+    this.sounds['hit_wall'].timer -= 1
+    this.sounds['attacked'].timer -= 1
+    this.sounds['hit_monster'].timer -= 1
+    this.sounds['powerup'].timer -= 1
 }
 
 Player.prototype.get_facing_coords = function()
@@ -154,4 +178,14 @@ Player.prototype.under_attack = function(text)
     var num = Math.floor(Math.random() * responses.length)
     
     this.talk(responses[num])
+    this.play_sound('attacked')
+}
+
+Player.prototype.play_sound = function(sound)
+{
+    if (this.sounds[sound].timer <= 0)
+    {
+        this.sounds[sound].play()
+        this.sounds[sound].timer = 10
+    }
 }

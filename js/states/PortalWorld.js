@@ -15,6 +15,10 @@ function PortalWorld()
 	{
 	    jaws.previous_game_state = {}
 	    
+	    var sound = new Howl({
+            urls: ['sounds/portal.wav']
+        }).play();
+	    
 	    hp = document.getElementById('hp')
 	    fps = document.getElementById('fps')
 	    
@@ -274,6 +278,7 @@ function PortalWorld()
             item.action = function ()
             {
                 scientist.talk("Mmm, tasty!")
+                scientist.play_sound('powerup')
                 scientist.hp = 300
             }
             while (jaws.collide(item, walls))
@@ -341,6 +346,7 @@ function PortalWorld()
 	            if (i < monsters_hit.length)
 	            {
 	                monsters_hit[i].hp -= scientist.damage
+	                scientist.play_sound('hit_monster')
                     if (monsters_hit[i].hp <= 0)
                     {
     	                var j = monsters.indexOf(monsters_hit[i])
@@ -363,6 +369,7 @@ function PortalWorld()
                             scientist.talk("Hey, this wall is soft. Maybe if I hit it some more...")
                         }
                         blocks_hit[0].hp -= scientist.damage
+                        scientist.play_sound('hit_wall')
                         //if (!scientist.armed) {scientist.hp -= 1}
                         if (blocks_hit[0].hp <= 0)
                         {
