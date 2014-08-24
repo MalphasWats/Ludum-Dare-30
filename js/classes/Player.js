@@ -32,6 +32,13 @@ function Player(options)
     this.damage = 1
     this.armed = false
     
+    this.text = false
+    this.text_timer = 0
+    
+    this.resistor = false
+    this.transformer = false
+    this.resonator = false
+    this.wall_broken = false
 }
 
 Player.prototype = new Mob({})
@@ -99,6 +106,19 @@ Player.prototype.update = function()
     {
         this.hp = this.hp_max
     }
+    
+    this.text_timer -= 1
+    if (this.text_timer <= 0)
+    {
+        this.text_timer = 0
+        this.text = false
+    }
+    
+    if (this.text)
+    {
+        this.text.x = this.x+(8*game_scale)
+        this.text.y = this.y-(8*game_scale)
+    }
 }
 
 Player.prototype.get_facing_coords = function()
@@ -120,4 +140,18 @@ Player.prototype.get_facing_coords = function()
         return {x: this.x-this.width, y: this.y}
     }
     else return {x: this.x, y: this.y}
+}
+
+Player.prototype.talk = function(text)
+{
+    this.text = new jaws.Text({text: text, x:this.x+(8*game_scale), y:this.y-(8*game_scale), width:120, height:80, wordWrap:true, color:'white', fontFace: 'Arial'})
+    this.text_timer = 300
+}
+
+Player.prototype.under_attack = function(text)
+{
+    var responses = ["Argh! My Blood!", "They're in my hair! They're in my hair!", "Ouch!", "Oof", "Aaaaah! Get away!"]
+    var num = Math.floor(Math.random() * responses.length)
+    
+    this.talk(responses[num])
 }

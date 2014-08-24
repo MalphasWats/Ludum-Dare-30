@@ -9,8 +9,12 @@ function PortalWorld()
 	
 	var monsters
 	
+	var items
+	
 	this.setup = function()
 	{
+	    jaws.previous_game_state = {}
+	    
 	    hp = document.getElementById('hp')
 	    fps = document.getElementById('fps')
 	    
@@ -148,6 +152,11 @@ function PortalWorld()
 	    
 	    scientist.hp -= 25
 	    
+	    if (depth == 1)
+        {
+            scientist.talk("Ouch! Hey, the portal! Noooooooo!")
+        }
+	    
 	    
 	    portal = new Sprite({x:Math.floor(Math.random() * world_width * 16 * game_scale)-8, y:Math.floor(Math.random() * world_height * 16 * game_scale)-8, anchor: "center", scale_image: game_scale})
 	    while (jaws.collide(portal, walls))
@@ -172,7 +181,6 @@ function PortalWorld()
                                           
                                           
         var monster_count = Math.floor(Math.random() * depth * 100)
-        console.log('generating', monster_count, 'monsters')
         monsters = []
         for (var i=0 ; i<monster_count ; i++)
         {
@@ -191,6 +199,97 @@ function PortalWorld()
         	    }
     	    }
             monsters.push(m)
+        }
+        
+        items = []
+        var items_sheet = new jaws.SpriteSheet({image: "graphics/items.png", orientation:'right', frame_size: [16,16]})
+        if (depth > 0 && !scientist.resistor)
+        {
+            var item = new Sprite({image: items_sheet.frames[8], x:portal.x+16, y:portal.y+16, anchor: "center", scale_image: game_scale})
+            item.action = function ()
+            {
+                scientist.talk("A Flux Resistor! With a few more parts I can open a portal home maybe...")
+                scientist.resistor = true
+            }
+            var wall = jaws.collideOneWithMany(item, walls)
+            if (wall.length > 0)
+            {
+                delete walls[walls.indexOf(wall[0])]
+                tilemap.clear()
+                tilemap.push(walls)
+            }
+            items.push(item)
+        }
+        if (depth > 2 && !scientist.transformer)
+        {
+            var item = new Sprite({image: items_sheet.frames[9], x:Math.floor(Math.random() * world_width * 16 * game_scale)-8, y:Math.floor(Math.random() * world_height * 16 * game_scale)-8, anchor: "center", scale_image: game_scale})
+            item.action = function ()
+            {
+                scientist.talk("An Optimus Transformer! I really just need 1 more thing...")
+                scientist.transformer = true
+            }
+            while (jaws.collide(item, walls))
+    	    {
+        	    item.x += 16
+        	    item.y += 16
+        	    if (item.x > world_width * 16 * game_scale)
+        	    {
+            	    item.x = Math.floor(Math.random() * world_width * 16 * game_scale)
+        	    }
+        	    if (item.y > world_height * 16 * game_scale)
+        	    {
+            	    item.y = Math.floor(Math.random() * world_height * 16 * game_scale)
+        	    }
+            }
+            items.push(item)
+        }
+        if (depth > 3 && !scientist.resonator)
+        {
+            var item = new Sprite({image: items_sheet.frames[10], x:Math.floor(Math.random() * world_width * 16 * game_scale)-8, y:Math.floor(Math.random() * world_height * 16 * game_scale)-8, anchor: "center", scale_image: game_scale})
+            item.action = function ()
+            {
+                scientist.talk("The Tachyon Resonator! I can go home! To the portal!")
+                scientist.resonator = true
+            }
+            while (jaws.collide(item, walls))
+    	    {
+        	    item.x += 16
+        	    item.y += 16
+        	    if (item.x > world_width * 16 * game_scale)
+        	    {
+            	    item.x = Math.floor(Math.random() * world_width * 16 * game_scale)
+        	    }
+        	    if (item.y > world_height * 16 * game_scale)
+        	    {
+            	    item.y = Math.floor(Math.random() * world_height * 16 * game_scale)
+        	    }
+            }
+            items.push(item)
+        }
+        
+        var mushroom_count = Math.floor(Math.random() * depth * 10)
+        for (var i=0 ; i<mushroom_count ; i++)
+        {
+            var item = new Sprite({image: items_sheet.frames[5], x:Math.floor(Math.random() * world_width * 16 * game_scale)-8, y:Math.floor(Math.random() * world_height * 16 * game_scale)-8, anchor: "center", scale_image: game_scale})
+            item.action = function ()
+            {
+                scientist.talk("Mmm, tasty!")
+                scientist.hp = 300
+            }
+            while (jaws.collide(item, walls))
+    	    {
+        	    item.x += 16
+        	    item.y += 16
+        	    if (item.x > world_width * 16 * game_scale)
+        	    {
+            	    item.x = Math.floor(Math.random() * world_width * 16 * game_scale)
+        	    }
+        	    if (item.y > world_height * 16 * game_scale)
+        	    {
+            	    item.y = Math.floor(Math.random() * world_height * 16 * game_scale)
+        	    }
+            }
+            items.push(item)
         }
 	}
 	
@@ -217,15 +316,24 @@ function PortalWorld()
 	    }
 	    
 	    var monsters_hit = jaws.collideOneWithMany(scientist, monsters)
+	    var live_monster = false
 	    for (var i=0 ; i<monsters_hit.length ; i++)
 	    {
 	        if (monsters_hit[i].alive)
-        	    scientist.hp -= monsters_hit[i].damage
+	        {
+	            var damage = monsters_hit[i].attack()
+	            if (damage > 0)
+	            {
+	                scientist.under_attack()
+                    scientist.hp -= damage
+                }
+        	    live_monster = true
+            }
 	    }
 	    
 	    if (jaws.pressed("space"))
 	    {
-	        if (monsters_hit.length > 0)
+	        if (live_monster) // && monsters_hit.length > 0)
 	        {
 	            var i=0
 	            while (i<monsters_hit.length && !monsters_hit[i].alive)
@@ -250,10 +358,19 @@ function PortalWorld()
                 {
                     if (typeof blocks_hit[0].hp !== 'undefined')
                     {
+                        if (!scientist.wall_broken)
+                        {
+                            scientist.talk("Hey, this wall is soft. Maybe if I hit it some more...")
+                        }
                         blocks_hit[0].hp -= scientist.damage
                         //if (!scientist.armed) {scientist.hp -= 1}
                         if (blocks_hit[0].hp <= 0)
                         {
+                            if (!scientist.wall_broken)
+                            {
+                                scientist.wall_broken = true
+                                scientist.talk("Ha! Take that!")
+                            }
                             var i = walls.indexOf(blocks_hit[0])
                             delete walls[i]
                             
@@ -276,13 +393,32 @@ function PortalWorld()
 	    jaws.update(monsters)
 	    
 	    viewport.centerAround(scientist)
+	    
+	    if (scientist.hp <= 0)
+	    {
+    	    jaws.switchGameState(Dead)
+	    }
 
 	    
 	    portal.setImage(portal.anim.next())
 	    
 	    if (jaws.collideOneWithOne(scientist, portal))
 	    {
-    	    jaws.switchGameState(PortalWorld)
+	        if (scientist.resistor && scientist.transformer && scientist.resonator)
+	        {
+    	        jaws.switchGameState(Lab)
+	        }
+	        else
+	        {
+    	        jaws.switchGameState(PortalWorld)
+    	    }
+	    }
+	    
+	    var items_collected = jaws.collideOneWithMany(scientist, items)
+	    for (var i=0 ; i<items_collected.length ; i++)
+	    {
+    	    items_collected[i].action()
+    	    items[items.indexOf(items_collected[i])] = 'undefined'
 	    }
 	
         if (scientist.hp < 300) {hp.style.color = 'red'}
@@ -299,8 +435,11 @@ function PortalWorld()
         viewport.apply( function()
         {
             scientist.draw()
+            if (scientist.text)
+                scientist.text.draw()
             portal.draw()
             jaws.draw(monsters)
+            jaws.draw(items)
         })
 	}
 }

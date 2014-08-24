@@ -32,10 +32,13 @@ function Monster(options)
     this.hp = this.hp_max
     this.hp_counter_max = 200
     this.hp_counter = this.hp_counter_max
-    this.damage = 1
+    this.damage = 5
     this.armed = false
     
     this.alive = true
+    
+    this.attack_timer = 0
+    this.attack_rate = 30
     
 }
 
@@ -127,6 +130,10 @@ Monster.prototype.update = function()
         this.dy = 0
     }
     
+    this.attack_timer -= 1
+    if (this.attack_timer < 0)
+        this.attack_timer = 0
+    
     this.move()
 }
 
@@ -149,4 +156,17 @@ Monster.prototype.get_facing_coords = function()
         return {x: this.x-this.width, y: this.y}
     }
     else return {x: this.x, y: this.y}
+}
+
+Monster.prototype.attack = function()
+{
+    if (this.attack_timer <= 0)
+    {
+        this.attack_timer = this.attack_rate
+        return this.damage
+    }
+    else
+    {
+        return 0
+    }
 }

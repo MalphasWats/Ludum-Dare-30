@@ -8,6 +8,8 @@ function Lab()
 	
 	this.setup = function()
 	{
+	    jaws.previous_game_state = {}
+	    
 	    hp = document.getElementById('hp')
 	    fps = document.getElementById('fps')
 	    
@@ -30,13 +32,22 @@ function Lab()
 	    
 	    scientist = new Player({x:64-8, y:64-8, anchor: "center", scale_image: game_scale})
 	    
+	    if (depth == 0)
+	    {
+	        scientist.talk("It worked! This changes everything!")
+	    }
+	    else
+	    {
+    	    scientist.talk("Home! At last.")
+    	    depth = 0
+	    }
+	    
 	    portal = new Sprite({x:128-8, y:128-8, anchor: "center", scale_image: game_scale})
 	    portal.anim = new jaws.Animation({sprite_sheet: "graphics/portal.png", 
                                           frame_size: [16,16], 
                                           orientation: "right", 
                                           frame_duration: 120,
                                           scale_image:game_scale})
-                                          
 	}
 	
 	this.update = function()
@@ -69,8 +80,10 @@ function Lab()
 	    {
     	    jaws.switchGameState(PortalWorld)
 	    }
-	
-        if (scientist.hp < 300) {hp.style.color = 'red'}
+	    
+	    scientist.update()
+	    
+	    if (scientist.hp < 300) {hp.style.color = 'red'}
         else {hp.style.color = 'white'}
         hp.innerHTML = scientist.hp + ' / ' + scientist.hp_max
     	fps.innerHTML = jaws.game_loop.fps
@@ -81,6 +94,7 @@ function Lab()
 	    jaws.clear()
 	    map.draw()
     	scientist.draw()
+    	if (scientist.text) {scientist.text.draw()}
     	portal.draw()
 	}
 }
