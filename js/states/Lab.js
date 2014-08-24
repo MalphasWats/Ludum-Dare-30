@@ -30,7 +30,7 @@ function Lab()
                 
         map = new Sprite({image: buffer, x:0, y:0})
 	    
-	    scientist = new Player({x:64-8, y:64-8, anchor: "center", scale_image: game_scale})
+	    scientist = new Player({x:64-(8 * game_scale), y:64-(8 * game_scale), anchor: "center", scale_image: game_scale})
 	    
 	    if (depth == 0)
 	    {
@@ -42,7 +42,7 @@ function Lab()
     	    depth = 0
 	    }
 	    
-	    portal = new Sprite({x:128-8, y:128-8, anchor: "center", scale_image: game_scale})
+	    portal = new Sprite({x:(128 * game_scale)-(8 * game_scale), y:(128 * game_scale)-(8 * game_scale), anchor: "center", scale_image: game_scale})
 	    portal.anim = new jaws.Animation({sprite_sheet: "graphics/portal.png", 
                                           frame_size: [16,16], 
                                           orientation: "right", 

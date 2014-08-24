@@ -137,12 +137,10 @@ function PortalWorld()
                 
         floor = new Sprite({image: buffer, x:0, y:0})
         
-        var x = 64, y = 64
-        
-	    while (jaws.collide(scientist, walls))
+        while (jaws.collide(scientist, walls))
 	    {
-    	    scientist.x += 16
-    	    scientist.y += 16
+    	    scientist.x += 16*game_scale
+    	    scientist.y += 16*game_scale
     	    
     	    if (scientist.x > world_width * 16 * game_scale)
     	    {
@@ -191,8 +189,8 @@ function PortalWorld()
             var m = new Monster({x:Math.floor(Math.random() * world_width * 16 * game_scale)-8, y:Math.floor(Math.random() * world_height * 16 * game_scale)-8, anchor: "center", scale_image: game_scale})
     	    while (jaws.collide(m, walls) || tilemap.lineOfSight([scientist.x, scientist.y], [m.x, m.y]))
     	    {
-        	    m.x += 16
-        	    m.y += 16
+        	    m.x += 16 * game_scale
+        	    m.y += 16 * game_scale
         	    if (m.x > world_width * 16 * game_scale)
         	    {
             	    m.x = Math.floor(Math.random() * world_width * 16 * game_scale)
@@ -209,7 +207,7 @@ function PortalWorld()
         var items_sheet = new jaws.SpriteSheet({image: "graphics/items.png", orientation:'right', frame_size: [16,16]})
         if (depth > 0 && !scientist.resistor)
         {
-            var item = new Sprite({image: items_sheet.frames[8], x:portal.x+16, y:portal.y+16, anchor: "center", scale_image: game_scale})
+            var item = new Sprite({image: items_sheet.frames[8], x:portal.x+(16 * game_scale), y:portal.y+(16 * game_scale), anchor: "center", scale_image: game_scale})
             item.action = function ()
             {
                 scientist.talk("A Flux Resistor! With a few more parts I can open a portal home maybe...")
@@ -234,8 +232,8 @@ function PortalWorld()
             }
             while (jaws.collide(item, walls))
     	    {
-        	    item.x += 16
-        	    item.y += 16
+        	    item.x += 16 * game_scale
+        	    item.y += 16 * game_scale
         	    if (item.x > world_width * 16 * game_scale)
         	    {
             	    item.x = Math.floor(Math.random() * world_width * 16 * game_scale)
@@ -257,8 +255,8 @@ function PortalWorld()
             }
             while (jaws.collide(item, walls))
     	    {
-        	    item.x += 16
-        	    item.y += 16
+        	    item.x += 16 * game_scale
+        	    item.y += 16 * game_scale
         	    if (item.x > world_width * 16 * game_scale)
         	    {
             	    item.x = Math.floor(Math.random() * world_width * 16 * game_scale)
@@ -283,8 +281,8 @@ function PortalWorld()
             }
             while (jaws.collide(item, walls))
     	    {
-        	    item.x += 16
-        	    item.y += 16
+        	    item.x += 16 * game_scale
+        	    item.y += 16 * game_scale
         	    if (item.x > world_width * 16 * game_scale)
         	    {
             	    item.x = Math.floor(Math.random() * world_width * 16 * game_scale)

@@ -10,7 +10,7 @@ body
 
 	margin:0 auto;
     
-    width:460px;
+    width:518px;
 }
 
 h1
@@ -38,10 +38,9 @@ p {padding:6px;}
 #hud 
 {
     border:3px solid white;
+    border-top:none;
     padding:6px;
-    position:relative;
-    top:-3px;
-    z-index: -1;
+    
 }
 
 #fps_box {float: right;}
